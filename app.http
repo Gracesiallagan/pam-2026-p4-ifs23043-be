@@ -2,10 +2,11 @@
 @BaseUrl = https://pam-2026-p4-ifs18005-be.delcom.org:8080
 #@BaseUrl = http://127.0.0.1:8000
 
+
 ## Profile
 ## ===========================================
 
-### Mengambil semua data tumbuhan
+### Mengambil data profil
 # @name GetProfile
 GET {{BaseUrl}}/profile
 Content-Type: application/json
@@ -14,6 +15,7 @@ Content-Type: application/json
 # @name GetProfilePhoto
 GET {{BaseUrl}}/profile/photo
 Content-Type: application/json
+
 
 
 ## Plants
@@ -41,15 +43,15 @@ Kangkung
 --WebAppBoundary
 Content-Disposition: form-data; name="deskripsi"
 
-Brokoli adalah sayuran hijau yang kaya vitamin, mineral, dan serat
+Kangkung adalah sayuran hijau yang kaya vitamin dan serat
 --WebAppBoundary
 Content-Disposition: form-data; name="manfaat"
 
-Membantu detoksifikasi dan menjaga kesehatan mata
+Membantu pencernaan dan menjaga kesehatan mata
 --WebAppBoundary
 Content-Disposition: form-data; name="efekSamping"
 
-Dapat menyebabkan kembung
+Dapat menyebabkan kembung jika berlebihan
 --WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="example.png"
 Content-Type: image/png
@@ -62,17 +64,17 @@ Content-Type: image/png
     console.log(client.global.get("plantId"))
 %}
 
-### Mengambil data tumbuhan berdasarkan id-nya
+### Mengambil data tumbuhan berdasarkan id
 # @name GetPlantById
 GET {{BaseUrl}}/plants/{{plantId}}
 Content-Type: application/json
 
-### Melihat gambar tumbuhan
+### Mengambil gambar tumbuhan
 # @name GetPlantImageById
 GET {{BaseUrl}}/plants/{{plantId}}/image
 Content-Type: application/json
 
-### Mengubah hanya data plant berdasarkan id-nya
+### Mengubah data tumbuhan (tanpa ganti gambar)
 # @name PutPlantOnlyData
 PUT {{BaseUrl}}/plants/{{plantId}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
@@ -80,22 +82,22 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 --WebAppBoundary
 Content-Disposition: form-data; name="nama"
 
-Brokoli Update
+Kangkung Update
 --WebAppBoundary
 Content-Disposition: form-data; name="deskripsi"
 
-Brokoli adalah sayuran hijau yang kaya vitamin, mineral, dan serat
+Kangkung segar hasil update
 --WebAppBoundary
 Content-Disposition: form-data; name="manfaat"
 
-Membantu detoksifikasi dan menjaga kesehatan mata
+Menambah energi dan menjaga pencernaan
 --WebAppBoundary
 Content-Disposition: form-data; name="efekSamping"
 
-Dapat menyebabkan kembung
+Tidak dianjurkan untuk penderita asam lambung
 --WebAppBoundary--
 
-### Mengubah gambar dan data plant berdasarkan id-nya
+### Mengubah data tumbuhan + gambar
 # @name PutPlant
 PUT {{BaseUrl}}/plants/{{plantId}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
@@ -103,19 +105,19 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 --WebAppBoundary
 Content-Disposition: form-data; name="nama"
 
-Brokoli
+Kangkung
 --WebAppBoundary
 Content-Disposition: form-data; name="deskripsi"
 
-Brokoli adalah sayuran hijau yang kaya vitamin, mineral, dan serat
+Kangkung hijau segar
 --WebAppBoundary
 Content-Disposition: form-data; name="manfaat"
 
-Membantu detoksifikasi dan menjaga kesehatan mata
+Menjaga kesehatan mata
 --WebAppBoundary
 Content-Disposition: form-data; name="efekSamping"
 
-Dapat menyebabkan kembung
+Tidak dianjurkan dikonsumsi berlebihan
 --WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="example.png"
 Content-Type: image/png
@@ -123,7 +125,63 @@ Content-Type: image/png
 < ./example.png
 --WebAppBoundary--
 
-### Menghapus data plant berdasarkan id-nya
+### Menghapus data tumbuhan
 # @name DeletePlant
 DELETE {{BaseUrl}}/plants/{{plantId}}
+Content-Type: application/json
+
+
+
+## Drinks
+## ===========================================
+
+### Mengambil semua data minuman
+# @name GetAllDrinks
+GET {{BaseUrl}}/drinks?search=
+Content-Type: application/json
+
+#> {%
+#    client.global.set("drinkId", response.body.data.drinks[0].id);
+#    console.log(client.global.get("drinkId"))
+#%}
+
+### Menambahkan data minuman (contoh: Bajigur)
+# @name PostDrinkBajigur
+POST {{BaseUrl}}/drinks
+Content-Type: application/json
+
+{
+  "nama": "Bajigur",
+  "deskripsi": "Minuman tradisional khas Sunda berbahan santan dan gula aren",
+  "bahanUtama": "Santan, gula aren, jahe",
+  "caraPenyajian": "Disajikan hangat dalam gelas",
+  "manfaat": "Menghangatkan tubuh dan meredakan masuk angin"
+}
+
+> {%
+    client.global.set("drinkId", response.body.data.drinkId);
+    console.log(client.global.get("drinkId"))
+%}
+
+### Mengambil data minuman berdasarkan id
+# @name GetDrinkById
+GET {{BaseUrl}}/drinks/{{drinkId}}
+Content-Type: application/json
+
+### Mengubah data minuman (contoh: Bandrek)
+# @name PutDrink
+PUT {{BaseUrl}}/drinks/{{drinkId}}
+Content-Type: application/json
+
+{
+  "nama": "Bandrek",
+  "deskripsi": "Minuman tradisional berbahan jahe dan rempah-rempah",
+  "bahanUtama": "Jahe, gula merah, rempah-rempah",
+  "caraPenyajian": "Disajikan hangat dan diminum perlahan",
+  "manfaat": "Membantu meredakan flu dan menghangatkan badan"
+}
+
+### Menghapus data minuman
+# @name DeleteDrink
+DELETE {{BaseUrl}}/drinks/{{drinkId}}
 Content-Type: application/json

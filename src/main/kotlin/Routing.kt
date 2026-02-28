@@ -9,32 +9,43 @@ import org.delcom.data.AppException
 import org.delcom.data.ErrorResponse
 import org.delcom.helpers.parseMessageToMap
 import org.delcom.services.PlantService
+import org.delcom.services.DrinkService
 import org.delcom.services.ProfileService
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
+
     val plantService: PlantService by inject()
+    val drinkService: DrinkService by inject()
     val profileService: ProfileService by inject()
 
     install(StatusPages) {
+
         // Tangkap AppException
         exception<AppException> { call, cause ->
-            val dataMap: Map<String, List<String>> = parseMessageToMap(cause.message)
+            val dataMap: Map<String, List<String>> =
+                parseMessageToMap(cause.message)
 
             call.respond(
                 status = HttpStatusCode.fromValue(cause.code),
                 message = ErrorResponse(
                     status = "fail",
-                    message = if (dataMap.isEmpty()) cause.message else "Data yang dikirimkan tidak valid!",
-                    data = if (dataMap.isEmpty()) null else dataMap.toString()
+                    message = if (dataMap.isEmpty())
+                        cause.message
+                    else
+                        "Data yang dikirimkan tidak valid!",
+                    data = if (dataMap.isEmpty())
+                        null
+                    else
+                        dataMap.toString()
                 )
             )
         }
 
-        // Tangkap semua Throwable lainnya
+        // Tangkap error lain
         exception<Throwable> { call, cause ->
             call.respond(
-                status = HttpStatusCode.fromValue(500),
+                status = HttpStatusCode.InternalServerError,
                 message = ErrorResponse(
                     status = "error",
                     message = cause.message ?: "Unknown error",
@@ -45,11 +56,14 @@ fun Application.configureRouting() {
     }
 
     routing {
+
         get("/") {
-            call.respondText("API telah berjalan. Dibuat oleh Grace Siallagan(JK).")
+            call.respondText("API telah berjalan. Dibuat oleh Grace Siallagan (JK).")
         }
 
-        // Route Plants
+        // ======================
+        // Route Plants (EXISTING)
+        // ======================
         route("/plants") {
             get {
                 plantService.getAllPlants(call)
@@ -66,14 +80,36 @@ fun Application.configureRouting() {
             delete("/{id}") {
                 plantService.deletePlant(call)
             }
-
             get("/{id}/image") {
                 plantService.getPlantImage(call)
             }
         }
 
+        // ======================
+        // Route Drinks (NEW)
+        // ======================
+        route("/drinks") {
+            get {
+                drinkService.getAllDrinks(call)
+            }
+            post {
+                drinkService.createDrink(call)
+            }
+            get("/{id}") {
+                drinkService.getDrinkById(call)
+            }
+            put("/{id}") {
+                drinkService.updateDrink(call)
+            }
+            delete("/{id}") {
+                drinkService.deleteDrink(call)
+            }
+        }
+
+        // ======================
         // Route Profile
-        route("/profile"){
+        // ======================
+        route("/profile") {
             get {
                 profileService.getProfile(call)
             }
