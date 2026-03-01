@@ -62,7 +62,7 @@ fun Application.configureRouting() {
     routing {
 
         get("/") {
-            call.respondText("API telah berjalan.")
+            call.respondText("API telah berjalan.oleh Grace Siallagan (JK)")
         }
 
         // ===== PLANTS =====
