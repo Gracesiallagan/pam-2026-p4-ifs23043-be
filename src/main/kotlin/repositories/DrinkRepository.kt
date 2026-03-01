@@ -2,11 +2,12 @@ package org.delcom.repositories
 
 import org.delcom.dao.DrinkDAO
 import org.delcom.entities.Drink
-import org.delcom.helpers.daoToModel
+import org.delcom.helpers.drinkDaoToModel
 import org.delcom.helpers.suspendTransaction
 import org.delcom.tables.DrinkTable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
 import java.util.UUID
@@ -18,33 +19,30 @@ class DrinkRepository : IDrinkRepository {
             DrinkDAO.all()
                 .orderBy(DrinkTable.createdAt to SortOrder.DESC)
                 .limit(20)
-                .map(::daoToModel)
+                .map(::drinkDaoToModel)
         } else {
             val keyword = "%${search.lowercase()}%"
-
             DrinkDAO
-                .find {
-                    DrinkTable.nama.lowerCase() like keyword
-                }
+                .find { DrinkTable.nama.lowerCase() like keyword }
                 .orderBy(DrinkTable.nama to SortOrder.ASC)
                 .limit(20)
-                .map(::daoToModel)
+                .map(::drinkDaoToModel)
         }
     }
 
     override suspend fun getDrinkById(id: String): Drink? = suspendTransaction {
         DrinkDAO
-            .find { (DrinkTable.id eq UUID.fromString(id)) }
+            .find { DrinkTable.id eq UUID.fromString(id) }
             .limit(1)
-            .map(::daoToModel)
+            .map(::drinkDaoToModel)
             .firstOrNull()
     }
 
     override suspend fun getDrinkByName(name: String): Drink? = suspendTransaction {
         DrinkDAO
-            .find { (DrinkTable.nama eq name) }
+            .find { DrinkTable.nama eq name }
             .limit(1)
-            .map(::daoToModel)
+            .map(::drinkDaoToModel)
             .firstOrNull()
     }
 
@@ -55,10 +53,10 @@ class DrinkRepository : IDrinkRepository {
             bahanUtama = drink.bahanUtama
             caraPenyajian = drink.caraPenyajian
             manfaat = drink.manfaat
+            pathGambar = drink.pathGambar
             createdAt = drink.createdAt
             updatedAt = drink.updatedAt
         }
-
         drinkDAO.id.value.toString()
     }
 
@@ -74,6 +72,7 @@ class DrinkRepository : IDrinkRepository {
             drinkDAO.bahanUtama = newDrink.bahanUtama
             drinkDAO.caraPenyajian = newDrink.caraPenyajian
             drinkDAO.manfaat = newDrink.manfaat
+            drinkDAO.pathGambar = newDrink.pathGambar
             drinkDAO.updatedAt = newDrink.updatedAt
             true
         } else {

@@ -14,9 +14,11 @@ data class Drink(
     var bahanUtama: String,
     var caraPenyajian: String,
     var manfaat: String,
+    var pathGambar: String,
 
     @Contextual
     val createdAt: Instant = Clock.System.now(),
+
     @Contextual
     var updatedAt: Instant = Clock.System.now(),
 )

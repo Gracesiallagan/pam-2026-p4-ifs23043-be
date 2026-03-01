@@ -10,6 +10,9 @@ data class DrinkRequest(
     var bahanUtama: String = "",
     var caraPenyajian: String = "",
     var manfaat: String = "",
+    var pathGambar: String = "",
+    var createdAt: String = "",
+    var updatedAt: String = "",
 ) {
 
     fun toMap(): Map<String, Any?> {
@@ -18,7 +21,10 @@ data class DrinkRequest(
             "deskripsi" to deskripsi,
             "bahanUtama" to bahanUtama,
             "caraPenyajian" to caraPenyajian,
-            "manfaat" to manfaat
+            "manfaat" to manfaat,
+            "pathGambar" to pathGambar,
+            "createdAt" to createdAt,
+            "updatedAt" to updatedAt,
         )
     }
 
@@ -28,7 +34,10 @@ data class DrinkRequest(
             deskripsi = deskripsi,
             bahanUtama = bahanUtama,
             caraPenyajian = caraPenyajian,
-            manfaat = manfaat
+            manfaat = manfaat,
+            pathGambar = pathGambar,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
     }
 }
