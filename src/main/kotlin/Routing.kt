@@ -21,10 +21,11 @@ fun Application.configureRouting() {
 
     install(StatusPages) {
 
-        // Tangkap AppException
+        // ======================
+        // AppException (VALIDASI)
+        // ======================
         exception<AppException> { call, cause ->
-            val dataMap: Map<String, List<String>> =
-                parseMessageToMap(cause.message)
+            val dataMap = parseMessageToMap(cause.message)
 
             call.respond(
                 status = HttpStatusCode.fromValue(cause.code),
@@ -37,19 +38,22 @@ fun Application.configureRouting() {
                     data = if (dataMap.isEmpty())
                         null
                     else
-                        dataMap.toString()
+                        dataMap.toString() // ✅ FIX FINAL
                 )
             )
         }
 
-        // Tangkap error lain
+        // ======================
+        // ERROR LAIN
+        // ======================
         exception<Throwable> { call, cause ->
+            cause.printStackTrace()
             call.respond(
-                status = HttpStatusCode.InternalServerError,
-                message = ErrorResponse(
+                HttpStatusCode.InternalServerError,
+                ErrorResponse(
                     status = "error",
                     message = cause.message ?: "Unknown error",
-                    data = ""
+                    data = null
                 )
             )
         }
@@ -58,64 +62,32 @@ fun Application.configureRouting() {
     routing {
 
         get("/") {
-            call.respondText("API telah berjalan. Dibuat oleh Grace Siallagan (JK).")
+            call.respondText("API telah berjalan.")
         }
 
-        // ======================
-        // Route Plants (EXISTING)
-        // ======================
+        // ===== PLANTS =====
         route("/plants") {
-            get {
-                plantService.getAllPlants(call)
-            }
-            post {
-                plantService.createPlant(call)
-            }
-            get("/{id}") {
-                plantService.getPlantById(call)
-            }
-            put("/{id}") {
-                plantService.updatePlant(call)
-            }
-            delete("/{id}") {
-                plantService.deletePlant(call)
-            }
-            get("/{id}/image") {
-                plantService.getPlantImage(call)
-            }
+            get { plantService.getAllPlants(call) }
+            post { plantService.createPlant(call) }
+            get("/{id}") { plantService.getPlantById(call) }
+            put("/{id}") { plantService.updatePlant(call) }
+            delete("/{id}") { plantService.deletePlant(call) }
+            get("/{id}/image") { plantService.getPlantImage(call) }
         }
 
-        // ======================
-        // Route Drinks (NEW)
-        // ======================
+        // ===== DRINKS =====
         route("/drinks") {
-            get {
-                drinkService.getAllDrinks(call)
-            }
-            post {
-                drinkService.createDrink(call)
-            }
-            get("/{id}") {
-                drinkService.getDrinkById(call)
-            }
-            put("/{id}") {
-                drinkService.updateDrink(call)
-            }
-            delete("/{id}") {
-                drinkService.deleteDrink(call)
-            }
+            get { drinkService.getAllDrinks(call) }
+            post { drinkService.createDrink(call) }
+            get("/{id}") { drinkService.getDrinkById(call) }
+            put("/{id}") { drinkService.updateDrink(call) }
+            delete("/{id}") { drinkService.deleteDrink(call) }
         }
 
-        // ======================
-        // Route Profile
-        // ======================
+        // ===== PROFILE =====
         route("/profile") {
-            get {
-                profileService.getProfile(call)
-            }
-            get("/photo") {
-                profileService.getProfilePhoto(call)
-            }
+            get { profileService.getProfile(call) }
+            get("/photo") { profileService.getProfilePhoto(call) }
         }
     }
 }
